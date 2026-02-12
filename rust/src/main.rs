@@ -4,6 +4,105 @@ use std::io;
 use rand::Rng;
 
 fn main() {
+}
+#[warn(dead_code)]
+fn use_option() {
+    let some_number = Some(5);
+    let some_char = Some('e');
+    let absent_number: Option<i32> = None;
+    println!("{}", some_number.unwrap() + 9);
+    println!("{}", some_char.unwrap());
+    println!("{}", plus_one(some_number).unwrap() + 9);
+}
+#[warn(dead_code)]
+fn plus_one(x: Option<i32>) -> Option<i32> {
+    match x {
+        None => None,
+        Some(i) => Some(i + 1),
+    }
+}
+#[warn(dead_code)]
+fn en() {
+    let four = IpAddrKind::V4;
+    let six = IpAddrKind::V6;
+    fn route(ip_kind: IpAddrKind) {
+        println!("{:?}", ip_kind)
+    }
+    route(IpAddrKind::V4);
+    route(IpAddrKind::V6);
+}
+
+#[derive(Debug)]
+enum IpAddrKind {
+    V4,
+    V6,
+}
+
+#[warn(dead_code)]
+fn meth() {
+    let rect1 = Rectangle {
+        width: 30,
+        height: 50,
+    };
+    let rect2 = Rectangle {
+        width: 10,
+        height: 40,
+    };
+    let mut rect3 = Rectangle {
+        width: 60,
+        height: 45,
+    };
+    // 不可变借用
+    println!("Can rect1 hold rect2? {}", rect1.can_hold0(&rect2));
+    // 可变借用
+    println!("Can rect1 hold rect3? {}", rect1.can_hold(&mut rect3));
+    let rect4 = Rectangle::square(60);
+    println!("Can rect1 hold rect4? {}", rect1.can_hold0(&rect4));
+}
+
+impl Rectangle {
+    fn square(size: u32) -> Self {
+        Self {
+            width: size,
+            height: size,
+        }
+    }
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+    fn can_hold0(&self, other: &Rectangle) -> bool {
+        self.width > other.width && self.height > other.height
+    }
+    fn can_hold(&self, other: &mut Rectangle) -> bool {
+        self.width > other.width && self.height > other.height
+    }
+}
+
+#[derive(Debug)]
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+#[warn(dead_code)]
+fn call_first_word() {
+    let s = String::from("132");
+    let idx = first_word(&s);
+    println!("First word: {}", idx);
+}
+
+fn first_word(s: &String) -> &str {
+    let bytes = s.as_bytes();
+    for (i, &item) in bytes.iter().enumerate() {
+        if item == b' ' {
+            return &s[0..i];
+        }
+    }
+    &s[..]
+}
+
+#[warn(dead_code)]
+fn demo() {
     let penguin_data = "\
    common name,length (cm)
    Little penguin,33
@@ -21,15 +120,11 @@ fn main() {
 
         // 声明一个 fields 变量，类型是 Vec
         // Vec 是 vector 的缩写，是一个可伸缩的集合类型，可以认为是一个动态数组
-        // <_>表示 Vec 中的元素类型由编译器自行推断，在很多场景下，都会帮我们省却不少功夫
-        let fields: Vec<_> = record
-            .split(',')
-            .map(|field| field.trim())
-            .collect();
+        // <_>表示 Vec 中的元素类型由编译器自行推断
+        let fields: Vec<_> = record.split(',').map(|field| field.trim()).collect();
         if cfg!(debug_assertions) {
             // 输出到标准错误输出
-            eprintln!("debug: {:?} -> {:?}",
-                      record, fields);
+            eprintln!("debug: {:?} -> {:?}", record, fields);
         }
 
         let name = fields[0];
