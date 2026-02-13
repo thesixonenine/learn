@@ -1,9 +1,21 @@
 use std::cmp::Ordering;
+use std::fs::File;
 use std::io;
-
+use std::io::ErrorKind;
 use rand::Rng;
 
 fn main() {
+    File::open("hello.txt").expect("Failed to open hello.txt");
+    let greeting_file = File::open("hello.txt").unwrap_or_else(|error| match error.kind() {
+        ErrorKind::NotFound => match File::create("hello.txt") {
+            Ok(fc) => fc,
+            Err(e) => panic!("Problem creating the file: {e:?}"),
+        },
+        _ => {
+            panic!("Problem opening the file: {error:?}");
+        }
+    });
+    println!("Hello, world!");
 }
 #[warn(dead_code)]
 fn use_option() {
